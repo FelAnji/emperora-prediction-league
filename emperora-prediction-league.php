@@ -1,0 +1,119 @@
+<?php
+/**
+ * Plugin Name:       Emperora Prediction League
+ * Description:       An interactive block with the Interactivity API.
+ * Version:           0.1.0
+ * Requires at least: 6.8
+ * Requires PHP:      7.4
+ * Author:            The WordPress Contributors
+ * License:           GPL-2.0-or-later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       emperora-prediction-league
+ *
+ * @package           create-block
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+require_once plugin_dir_path(__FILE__) . 'inc/class-rest-api.php';
+require_once plugin_dir_path(__FILE__) . 'inc/class-point.php';
+require_once plugin_dir_path(__FILE__) . 'inc/install.php';
+require_once plugin_dir_path(__FILE__) . 'inc/class-credit.php';
+require_once plugin_dir_path(__FILE__) . 'inc/class-payment.php';
+require_once plugin_dir_path(__FILE__) . 'inc/class-admin.php';
+
+/**
+ * Registers the block using the metadata loaded from the `block.json` file.
+ * Behind the scenes, it registers also all assets so they can be enqueued
+ * through the block editor in the corresponding context.
+ *
+ * @see https://developer.wordpress.org/reference/functions/register_block_type/
+ */
+
+//Creation of custom DB Table
+function epl_create_tables() {
+    global $wpdb;
+
+    $table_name      = $wpdb->prefix . 'epl_predictions';
+    $charset_collate = $wpdb->get_charset_collate();
+
+    $sql = "CREATE TABLE $table_name (
+        id              BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+        match_id        BIGINT(20) UNSIGNED NOT NULL,
+        user_id         BIGINT(20) UNSIGNED NOT NULL,
+        predicted_winner VARCHAR(20) NOT NULL,
+        predicted_score_home TINYINT UNSIGNED DEFAULT NULL,
+        predicted_score_away TINYINT UNSIGNED DEFAULT NULL,
+        points_earned   TINYINT UNSIGNED DEFAULT 0,
+        created_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY  (id),
+        UNIQUE KEY match_user (match_id, user_id)
+    ) $charset_collate;";
+
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+    dbDelta( $sql );
+}
+
+register_activation_hook( __FILE__, 'epl_create_tables' );
+register_activation_hook( __FILE__, 'emperora_create_payment_tables' );
+
+function create_block_emperora_prediction_league_block_init() {
+	register_block_type_from_metadata( __DIR__ . '/build' );
+  register_block_type_from_metadata( __DIR__ . '/build/leaderboard' );
+}
+add_action( 'init', 'create_block_emperora_prediction_league_block_init' );
+
+function match_post_type () {
+    register_post_type('epl_match', [ 
+        'label' => 'Matches', 
+        'public' => true, 
+        'show_ui' => true, 
+        'show_in_rest'  => true,
+        'menu_icon'     => 'dashicons-tickets-alt',
+		'supports'     => [ 'title', 'editor', 'custom-fields' ],
+    ]);
+}
+
+
+function match_meta() {
+  register_post_meta('epl_match', 'home_team', [
+    'single' => true,
+    'type' => 'string',
+    'show_in_rest' => true,
+    'auth_callback' => fn() => current_user_can('edit_posts'),
+  ]);
+
+  register_post_meta('epl_match', 'away_team', [
+    'single' => true,
+    'type' => 'string',
+    'show_in_rest' => true,
+    'auth_callback' => fn() => current_user_can('edit_posts'),
+  ]);
+
+  register_post_meta('epl_match', 'home_score', [
+    'single' => true,
+    'type' => 'number',
+    'show_in_rest' => true,
+    'auth_callback' => fn() => current_user_can('edit_posts'),
+  ]);
+
+  register_post_meta('epl_match', 'away_score', [
+    'single' => true,
+    'type' => 'number',
+    'show_in_rest' => true,
+    'auth_callback' => fn() => current_user_can('edit_posts'),
+  ]);
+
+  register_post_meta('epl_match', 'match_status', [
+        'single'        => true,
+        'type'          => 'string',   // 'upcoming' | 'completed'
+        'show_in_rest'  => true,
+        'default'       => 'upcoming',
+        'auth_callback' => fn() => current_user_can('edit_posts'),
+  ]);
+}
+
+add_action('init', 'match_post_type');
+add_action('init', 'match_meta');  
