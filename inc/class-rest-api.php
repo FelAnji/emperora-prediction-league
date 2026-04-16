@@ -64,6 +64,7 @@
                     'predicted_score_away' => $score_away
                 ]
             );
+            epl_deduct_credit($user_id);
         }
 
         return rest_ensure_response(['success' => true]);

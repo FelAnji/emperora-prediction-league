@@ -11,7 +11,10 @@ wp_interactivity_state('emperora', [
     'homeTeam' => $home_team,
     'awayTeam' => $away_team,
 
-	'isPredictScore' => false
+	'isPredictScore' => false,
+
+    'balance' => epl_get_balance(get_current_user_id()),
+    'paystackPublicKey' => EPL_PAYSTACK_PUBLIC_KEY
 ]);
 ?>
 
@@ -38,6 +41,11 @@ wp_interactivity_state('emperora', [
         <h1>
             <?php echo esc_html($home_team); ?> vs <?php echo esc_html($away_team); ?>
         </h1>
+    </span>
+
+    <span>
+        <p data-wp-text="state.balance">Balance</p>
+        <button data-wp-on--click="actions.buyCredits">Buy Credits</button>
     </span>
 
     <button

@@ -1,9 +1,9 @@
 /**
  * WordPress dependencies
  */
-import { store, getContext } from '@wordpress/interactivity';
+import { store, getContext, getElement } from '@wordpress/interactivity';
 
-store('emperora', {
+const { state, actions } = store('emperora', {
     actions: {
         togglePrediction() {
             const context = getContext();
@@ -25,7 +25,14 @@ store('emperora', {
         },
         async submitPrediction() {
             console.log('submitPrediction fired');
+
+            if (state.balance == 0) {
+                alert("You do not have sufficient credit to play")
+                return;
+            }
+
             const context = getContext();
+
             try {
                 const body = {
                     match_id: context.matchID,
@@ -47,11 +54,34 @@ store('emperora', {
                 });
 
                 const data = await response.json();
-                console.log(data);
+
+                if (data.success) {
+                    state.balance--;
+                }
             } catch (error) {
                 console.error('Prediction failed:', error);
             }
         },
+        async buyCredits() {
+            const context = getContext();
+            console.log('context:', context);
+            try {
+                const response = await fetch('/wp-json/emperora/v1/buy', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-WP-Nonce': context.nonce,
+                    },
+                    body: JSON.stringify({ amount: 5 })
+                });
+                console.log('response status:', response.status);
+                const data = await response.json();
+                console.log('data:', data);
+                window.location.href = data.data.authorization_url;
+            } catch (error) {
+                console.error('Payment failed:', error);
+            }
+        }
     },
 
     callbacks: {
@@ -75,27 +105,3 @@ store('emperora', {
         }
     }
 });
-
-// const { state } = store( 'epl-block', {
-// 	state: {
-// 		get themeText() {
-// 			return state.isDark ? state.darkText : state.lightText;
-// 		},
-// 	},
-// 	actions: {
-// 		toggleOpen() {
-// 			const context = getContext();
-// 			context.isOpen = ! context.isOpen;
-// 		},
-// 		toggleTheme() {
-// 			state.isDark = ! state.isDark;
-// 		},
-// 	},
-// 	callbacks: {
-// 		logIsOpen: () => {
-// 			const { isOpen } = getContext();
-// 			// Log the value of `isOpen` each time it changes.
-// 			console.log( `Is open: ${ isOpen }` );
-// 		},
-// 	},
-// } );

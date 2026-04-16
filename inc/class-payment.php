@@ -53,10 +53,13 @@ function epl_buy_credits($request) {
     ]);
 
     if (is_wp_error($response)) {
+        error_log('Paystack error: ' . $response->get_error_message());
         return new WP_Error('paystack_error', 'Payment initialisation failed', ['status' => 500]);
     }
 
     $body = json_decode(wp_remote_retrieve_body($response), true);
+
+    error_log(print_r($body, true));
 
     return rest_ensure_response($body);
 }
