@@ -23,6 +23,7 @@ require_once plugin_dir_path(__FILE__) . 'inc/install.php';
 require_once plugin_dir_path(__FILE__) . 'inc/class-credit.php';
 require_once plugin_dir_path(__FILE__) . 'inc/class-payment.php';
 require_once plugin_dir_path(__FILE__) . 'inc/class-admin.php';
+require_once plugin_dir_path(__FILE__) . 'inc/class-login.php';
 
 /**
  * Registers the block using the metadata loaded from the `block.json` file.
@@ -73,6 +74,7 @@ function match_post_type () {
         'show_in_rest'  => true,
         'menu_icon'     => 'dashicons-tickets-alt',
 		'supports'     => [ 'title', 'editor', 'custom-fields' ],
+      'has_archive'  => true,
     ]);
 }
 

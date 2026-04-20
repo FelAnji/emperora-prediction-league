@@ -38,6 +38,19 @@ function epl_buy_credits($request) {
     $email = wp_get_current_user()->user_email;
     $amount = $request['amount'];
 
+    if (!$amount || intval($amount) < 12) {
+        return new WP_Error('invalid_amount', 'Minimum purchase is 12 credits', ['status' => 400]);
+    }
+
+    $match_id = $request['match_id'];
+
+    $callback_url = add_query_arg([
+        'epl_payment' => 'verify',
+        'user_id'     => $user_id,
+        'match_id' => $match_id
+    ], get_permalink($match_id));
+    error_log('Callback URL: ' . $callback_url);
+
     $response = wp_remote_post('https://api.paystack.co/transaction/initialize', [
     'headers' => [
         'Authorization' => 'Bearer ' . EPL_PAYSTACK_SECRET_KEY,
@@ -45,8 +58,10 @@ function epl_buy_credits($request) {
     ],
     'body' => json_encode([
             'email'  => $email,
-            'amount' => $amount * 100, // Paystack uses kobo, so multiply by 100
+            'amount' => $amount * 25 * 100, // Paystack uses kobo, so multiply by 100
+            'callback_url' => $callback_url, 
             'metadata' => [
+                'user_id' => $user_id,  
                 'credits' => $request['amount']
             ]
         ]),
@@ -59,12 +74,11 @@ function epl_buy_credits($request) {
 
     $body = json_decode(wp_remote_retrieve_body($response), true);
 
-    error_log(print_r($body, true));
-
     return rest_ensure_response($body);
 }
 
 function epl_handle_webhook($request) {
+
     // 1. Get the raw request body
     $body = $request->get_body();
 
@@ -85,16 +99,17 @@ function epl_handle_webhook($request) {
     }
 
     // 5. Get the user by email
-    $email = $event['data']['customer']['email'];
-    $user = get_user_by('email', $email);
+    $metadata = $event['data']['metadata'];
+    $user_id  = intval($metadata['user_id']);
+    $amount   = intval($metadata['credits']);
 
-    if (!$user) {
+    if (!$user_id) {
         return new WP_Error('user_not_found', 'User not found', ['status' => 404]);
     }
 
     // 6. Add credits to the user
     $amount = $event['data']['metadata']['credits'];
-    epl_add_credits($user->ID, $amount);
+    epl_add_credits($user_id, $amount);
 
     return rest_ensure_response(['success' => true]);
 }

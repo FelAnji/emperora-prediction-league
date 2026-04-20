@@ -1,12 +1,175 @@
-/**
- * The following styles get applied both on the front of your site
- * and in the editor.
- *
- * Replace them with your own styles or remove the file completely.
- */
-
 .wp-block-create-block-leaderboard {
-	background-color: #21759b;
-	color: #fff;
-	padding: 2px;
+    --epl-red: #FF2800;
+
+    background: #fff;
+    border: 0.5px solid rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    padding: 1.5rem;
+    max-width: 480px;
+    margin: 0 auto;
+    font-family: sans-serif;
+
+    .epl-leaderboard-title {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
+
+	table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+
+        thead tr {
+            border-bottom: 0.5px solid rgba(0, 0, 0, 0.15);
+
+            th {
+                text-align: left;
+                padding: 6px 0;
+                color: #666;
+                font-weight: 500;
+
+                &:not(:first-child) {
+                    text-align: center;
+                }
+            }
+        }
+
+        tbody tr {
+            border-bottom: 0.5px solid rgba(0, 0, 0, 0.15);
+
+            td {
+                padding: 10px 0;
+                color: #333;
+
+                &:not(:first-child) {
+                    text-align: center;
+                }
+
+                &.epl-pts {
+                    font-weight: 500;
+                }
+            }
+
+            &.epl-rank-1 { background: rgba(255, 40, 0, 0.04); }
+            &.epl-rank-2 { background: rgba(180, 180, 180, 0.05); }
+            &.epl-rank-3 { background: rgba(180, 83, 9, 0.04); }
+        }
+    }
+
+	.epl-leaderboard-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+	.epl-rules-btn {
+        font-size: 12px;
+        font-weight: 500;
+        padding: 4px 12px;
+        border-radius: 99px;
+        border: 1.5px solid rgba(0, 0, 0, 0.3);
+        background: transparent;
+        color: #666;
+        cursor: pointer;
+        transition: border-color 0.15s, color 0.15s;
+
+        &:hover {
+            border-color: var(--epl-red);
+            color: var(--epl-red);
+        }
+    }
+
+    .epl-rules-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+
+        &.is-open {
+            display: flex;
+        }
+
+        .epl-rules-modal {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            max-width: 360px;
+            width: 90%;
+
+            .epl-rules-title {
+                font-size: 16px;
+                font-weight: 500;
+                margin-bottom: 1rem;
+            }
+
+            .epl-rules-list {
+                list-style: none;
+                padding: 0;
+                margin: 0 0 1.25rem;
+
+                li {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 8px 0;
+                    border-bottom: 0.5px solid rgba(0, 0, 0, 0.15);
+                    font-size: 14px;
+                    color: #333;
+                }
+            }
+
+            .epl-rules-pts {
+                font-weight: 500;
+                color: var(--epl-red);
+                min-width: 36px;
+            }
+
+            .epl-rules-close {
+                width: 100%;
+                padding: 8px;
+                border-radius: 8px;
+                border: none;
+                background: var(--epl-red);
+                color: #fff;
+                font-size: 14px;
+                font-weight: 500;
+                cursor: pointer;
+
+                &:hover {
+                    background: var(--epl-red-dark);
+                }
+            }
+        }
+    }
+
+    .epl-empty {
+        text-align: center;
+        padding: 2rem 1rem;
+        color: #666;
+        font-size: 14px;
+        border: 0.5px solid rgba(0, 0, 0, 0.15);
+        border-radius: 8px;
+    }
+
+    .epl-rank-1 .epl-rank-num { color: var(--epl-red); font-weight: 500; }
+    .epl-rank-2 .epl-rank-num { color: #666; font-weight: 500; }    
+    .epl-rank-3 .epl-rank-num { color: #b45309; font-weight: 500; }
+
+    @media (max-width: 480px) {
+        padding: 1rem;
+
+        .epl-leaderboard-title {
+            font-size: 16px;
+        }
+
+        table {
+            font-size: 13px;
+        }
+    }
+
 }

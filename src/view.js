@@ -64,7 +64,12 @@ const { state, actions } = store('emperora', {
         },
         async buyCredits() {
             const context = getContext();
-            console.log('context:', context);
+
+            if (!context.creditAmount || context.creditAmount < 12) {
+                alert('Minimum purchase is 12 credits');
+                return;
+            }
+
             try {
                 const response = await fetch('/wp-json/emperora/v1/buy', {
                     method: 'POST',
@@ -72,16 +77,24 @@ const { state, actions } = store('emperora', {
                         'Content-Type': 'application/json',
                         'X-WP-Nonce': context.nonce,
                     },
-                    body: JSON.stringify({ amount: 5 })
+                    body: JSON.stringify({ 
+                        amount: context.creditAmount,
+                        match_id: context.matchID
+                    })
+                    
                 });
-                console.log('response status:', response.status);
                 const data = await response.json();
-                console.log('data:', data);
                 window.location.href = data.data.authorization_url;
             } catch (error) {
                 console.error('Payment failed:', error);
             }
+        },
+        setCreditAmount(event) {
+            const context = getContext();
+            context.creditAmount = parseInt(event.target.value);
         }
+
+
     },
 
     callbacks: {
