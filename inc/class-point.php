@@ -18,6 +18,9 @@ function epl_calculate_points($post) {
         $home_score = get_post_meta($post_id, 'home_score', true);
         $away_score = get_post_meta($post_id, 'away_score', true);
 
+        if ($home_score === '' || $away_score === '') return;
+        if ($match_status !== 'completed') return;
+
         error_log("home_score: $home_score | away_score: $away_score");
 
         $predictions = $wpdb->get_results($wpdb->prepare(

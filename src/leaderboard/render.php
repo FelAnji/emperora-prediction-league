@@ -1,5 +1,26 @@
 <?php 
 
+if (!function_exists('epl_get_prediction_indicator')) {
+    function epl_get_prediction_indicator($prediction) {
+        $letter = match($prediction->predicted_winner) {
+        'predict_score' => 'S',
+        'draw'          => 'D',
+        'home', 'away'  => 'W',
+        default         => '?'
+    };
+
+    if ($prediction->match_status !== 'completed') {
+        $colour = 'grey';
+    } elseif ($prediction->points_earned > 0) {
+        $colour = 'green';
+    } else {
+        $colour = 'red';
+    }
+
+    return ['letter' => $letter, 'colour' => $colour];
+    }
+}
+
 global $wpdb;
 
 $results = $wpdb->get_results(
@@ -41,18 +62,42 @@ $results = $wpdb->get_results(
                     <th>Player</th>
                     <th>G</th>
                     <th>Pts</th>
+                    <th>Last 5</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($results as $index => $row) : 
                     $rank = $index + 1;
                     $rank_class = $rank <= 3 ? "epl-rank-{$rank}" : '';
+
+                    $last_5 = $wpdb->get_results($wpdb->prepare(
+                        "SELECT p.predicted_winner, p.predicted_score_home, p.predicted_score_away, p.points_earned, m.post_status,
+                                pm.meta_value AS match_status
+                        FROM {$wpdb->prefix}epl_predictions p
+                        JOIN {$wpdb->prefix}posts m ON p.match_id = m.ID
+                        JOIN {$wpdb->prefix}postmeta pm ON pm.post_id = m.ID AND pm.meta_key = 'match_status'
+                        WHERE p.user_id = %d
+                        ORDER BY p.created_at DESC
+                        LIMIT 5",
+                        $row->user_id
+                    ));
+
+                    $last_5 = array_reverse($last_5);
                 ?>
                     <tr class="<?php echo $rank_class; ?>">
                         <td><span class="epl-rank-num"><?php echo $rank; ?></span></td>
-                        <td><?php echo get_userdata($row->user_id)->user_login; ?></td>
+                        <td><?php echo mb_strimwidth(get_userdata($row->user_id)->display_name, 0, 12, '...'); ?></td>
                         <td><?php echo $row->total_games; ?></td>
-                        <td class="epl-pts"><?php echo $row->total_points; ?></td>
+                        
+                        <td class="epl-pts"><?php echo $row->total_points; ?></td>    
+                        <td class="epl-last-5">
+                            <?php foreach ($last_5 as $prediction) : ?>
+                                <?php $indicator = epl_get_prediction_indicator($prediction); ?>
+                                <span class="epl-indicator--<?= $indicator['colour'] ?>">
+                                    <?= $indicator['letter'] ?>
+                                </span>
+                            <?php endforeach; ?>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

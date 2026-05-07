@@ -12,6 +12,18 @@
         $meta = get_post_meta(get_the_ID());
         $home_team = $meta['home_team'][0];
         $away_team = $meta['away_team'][0];
+        $match_status = $meta['match_status'][0] ?? 'upcoming';
+
+        $match_id = get_the_ID();
+        $user_id = get_current_user_id();
+
+        global $wpdb;
+
+        $prediction = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}epl_predictions WHERE match_id = %d AND user_id = %d",
+            $match_id,
+            $user_id
+        ));
 
         wp_interactivity_state('emperora', [
             'isOpen' => false,
@@ -24,8 +36,6 @@
             'paystackPublicKey' => EPL_PAYSTACK_PUBLIC_KEY
         ]);
         ?>
-
-        <?php echo wp_create_nonce('wp_rest'); ?>
 
         <div
             <?php echo get_block_wrapper_attributes(); ?>
@@ -74,6 +84,8 @@
                     <button class="epl-btn epl-btn--sm" data-wp-on--click="actions.buyCredits">Buy Credits</button>
             </span>
 
+            <?php if ($match_status === 'upcoming') : ?>
+
             <button
                 class="epl-btn epl-btn--full"
                 data-wp-on--click="actions.togglePrediction"
@@ -111,6 +123,39 @@
                     </div>
                 </div>
             </div>
+
+            <?php else : ?>
+                <?php
+                if ($prediction) {
+                    echo '<div class="epl-prediction-result">';
+                    echo '<span class="epl-prediction-closed-badge">🔒 Predictions closed</span>';
+                    echo '<p class="epl-prediction-label">Your prediction</p>';
+                    echo '<p class="epl-prediction-value">';
+                    switch ($prediction->predicted_winner) {
+                        case 'home':
+                            echo esc_html($home_team) . ' win';
+                            break;
+                        case 'away':
+                            echo esc_html($away_team) . ' win';
+                            break;
+                        case 'predict_score':
+                            echo esc_html($prediction->predicted_score_home) . ' - ' . esc_html($prediction->predicted_score_away);
+                            break;
+                        case 'draw':
+                            echo 'Draw';
+                            break;
+                        default:
+                            echo 'No prediction made';
+                    }
+                    echo '</p>';
+                    echo '</div>';
+                } else {
+                    echo '<div class="epl-prediction-result">';
+                    echo '<span class="epl-prediction-closed-badge">🔒 Predictions closed</span>';
+                    echo '<p class="epl-prediction-value">You did not make a prediction for this match.</p>';
+                    echo '</div>';
+                } ?> 
+            <?php endif; ?>
             
         </div>
 
