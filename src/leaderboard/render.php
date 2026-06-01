@@ -1,5 +1,13 @@
 <?php 
 
+global $wpdb;
+
+$season_id = isset($_GET['season_id']) ? intval($_GET['season_id']) :  
+    $wpdb->get_var("SELECT id FROM {$wpdb->prefix}epl_seasons WHERE status='active' LIMIT 1");
+$round_id  = isset($_GET['round_id'])  ? intval($_GET['round_id'])  : 
+    $wpdb->get_var("SELECT id FROM {$wpdb->prefix}epl_rounds WHERE status='active' LIMIT 1");
+
+
 if (!function_exists('epl_get_prediction_indicator')) {
     function epl_get_prediction_indicator($prediction) {
         $letter = match($prediction->predicted_winner) {
@@ -23,11 +31,22 @@ if (!function_exists('epl_get_prediction_indicator')) {
 
 global $wpdb;
 
+$where = "WHERE 1=1";
+
+if ($season_id) {
+    $where .= $wpdb->prepare(" AND season_id = %d", $season_id);
+}
+
+if ($round_id) {
+    $where .= $wpdb->prepare(" AND round_id = %d", $round_id);
+}
+
 $results = $wpdb->get_results(
     "SELECT user_id, COUNT(*) as total_games, SUM(points_earned) as total_points
     FROM {$wpdb->prefix}epl_predictions
+    $where
     GROUP BY user_id
-    ORDER BY total_points DESC" 
+    ORDER BY total_points DESC"
 );
 
 ?>
@@ -50,6 +69,30 @@ $results = $wpdb->get_results(
         </div>
     </div>
 
+    <?php
+        $seasons = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}epl_seasons ORDER BY created_at DESC");
+        $rounds  = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}epl_rounds ORDER BY created_at DESC");
+    ?>
+
+    <form method="get" class="epl-filter-form">
+        <select name="season_id">
+            <?php foreach ($seasons as $season) : ?>
+                <option value="<?php echo $season->id; ?>" <?php selected($season_id, $season->id); ?>>
+                    <?php echo esc_html($season->title); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+
+        <select name="round_id" data-selected="<?php echo $round_id; ?>">
+            <?php foreach ($rounds as $round) : ?>
+                <option value="<?php echo $round->id; ?>" <?php selected($round_id, $round->id); ?>>
+                    <?php echo esc_html($round->title); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+
+        <button type="submit" class="epl-btn epl-btn--sm">Filter</button>
+    </form>
     <?php if (empty($results)) : ?>
         <div class="epl-empty">
             <p>No predictions yet. Be the first to play!</p>

@@ -10,4 +10,28 @@ document.addEventListener('DOMContentLoaded', () => {
     close.addEventListener('click', () => {
         overlay.classList.remove('is-open');
     });
+
+    const seasonSelect = document.querySelector('select[name="season_id"]');
+    const roundSelect  = document.querySelector('select[name="round_id"]');
+
+    seasonSelect.addEventListener('change', async () => {
+        const seasonId = seasonSelect.value;
+
+        const response = await fetch(`/wp-json/emperora/v1/rounds?season_id=${seasonId}`);
+        const rounds   = await response.json();
+
+        roundSelect.innerHTML = '';
+        rounds.forEach(round => {
+            const option = document.createElement('option');
+            option.value       = round.id;
+            option.textContent = round.title;
+            roundSelect.appendChild(option);
+        });
+
+        setTimeout(() => {
+            roundSelect.value = roundSelect.dataset.selected;
+        }, 0);
+    });
+
+    seasonSelect.dispatchEvent(new Event('change'));
 });

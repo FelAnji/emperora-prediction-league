@@ -12,6 +12,30 @@
             'callback' => 'get_prediction',
             'permission_callback' => fn() => is_user_logged_in()
         ]);
+
+        register_rest_route('emperora/v1', '/rounds', [
+            'methods' => 'GET',
+            'callback' => 'get_rounds',
+            'permission_callback' => '__return_true'
+        ]);
+    }
+
+    function get_rounds($request) {
+        global $wpdb;
+
+        if ($request['season_id']) {
+            $season_id = intval($request['season_id']);
+            $rounds = $wpdb->get_results($wpdb->prepare(
+                "SELECT * FROM {$wpdb->prefix}epl_rounds WHERE season_id = %d",
+                $season_id
+            ));
+        } else {
+            $rounds = $wpdb->get_results(
+                "SELECT * FROM {$wpdb->prefix}epl_rounds"
+            );
+        }
+
+        return rest_ensure_response($rounds);
     }
 
     function get_prediction ($request) {
@@ -34,6 +58,16 @@
         $user_id = get_current_user_id();
         $match_id = intval($request['match_id']);
         $predicted_winner = sanitize_text_field($request['predicted_winner']);
+        $round_id = get_post_meta(
+            $match_id,
+            'round_id',
+            true
+        );
+        $season_id = get_post_meta(
+            $match_id,
+            'season_id',
+            true 
+        );
 
         $score_home = isset($request['predicted_score_home']) ? intval($request['predicted_score_home']) : null; 
         $score_away = isset($request['predicted_score_away']) ? intval($request['predicted_score_away']) : null;
@@ -48,7 +82,9 @@
                 [
                     'predicted_winner' => $predicted_winner, 
                     'predicted_score_home' => $score_home, 
-                    'predicted_score_away' => $score_away
+                    'predicted_score_away' => $score_away,
+                    'round_id' => $round_id,
+                    'season_id' => $season_id
                 ], // data to update
                 [
                     'id' => $existing
@@ -61,7 +97,9 @@
                     'user_id' => $user_id, 
                     'predicted_winner' => $predicted_winner, 
                     'predicted_score_home' => $score_home, 
-                    'predicted_score_away' => $score_away
+                    'predicted_score_away' => $score_away,
+                    'round_id' => $round_id,
+                    'season_id' => $season_id
                 ]
             );
             epl_deduct_credit($user_id);

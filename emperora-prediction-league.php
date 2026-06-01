@@ -36,29 +36,67 @@ require_once plugin_dir_path(__FILE__) . 'inc/class-login.php';
 //Creation of custom DB Table
 function epl_create_tables() {
     global $wpdb;
-
-    $table_name      = $wpdb->prefix . 'epl_predictions';
     $charset_collate = $wpdb->get_charset_collate();
 
-    $sql = "CREATE TABLE $table_name (
-        id              BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-        match_id        BIGINT(20) UNSIGNED NOT NULL,
-        user_id         BIGINT(20) UNSIGNED NOT NULL,
-        predicted_winner VARCHAR(20) NOT NULL,
+    // Predictions table
+    $predictions = $wpdb->prefix . 'epl_predictions';
+    $sql1 = "CREATE TABLE $predictions (
+        id                   BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+        match_id             BIGINT(20) UNSIGNED NOT NULL,
+        user_id              BIGINT(20) UNSIGNED NOT NULL,
+        season_id            BIGINT(20) UNSIGNED DEFAULT NULL,
+        round_id             BIGINT(20) UNSIGNED DEFAULT NULL,
+        predicted_winner     VARCHAR(20) NOT NULL,
         predicted_score_home TINYINT UNSIGNED DEFAULT NULL,
         predicted_score_away TINYINT UNSIGNED DEFAULT NULL,
-        points_earned   TINYINT UNSIGNED DEFAULT 0,
-        created_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY  (id),
+        points_earned        TINYINT UNSIGNED DEFAULT 0,
+        created_at           DATETIME DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
         UNIQUE KEY match_user (match_id, user_id)
     ) $charset_collate;";
 
+    // Seasons table
+    $seasons = $wpdb->prefix . 'epl_seasons';
+    $sql2 = "CREATE TABLE $seasons (
+        id         BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+        title      VARCHAR(100) NOT NULL,
+        status     ENUM('active', 'completed') NOT NULL DEFAULT 'active',
+        start_date DATE DEFAULT NULL,
+        end_date   DATE DEFAULT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id)
+    ) $charset_collate;";
+
+    // Rounds table
+    $rounds = $wpdb->prefix . 'epl_rounds';
+    $sql3 = "CREATE TABLE $rounds (
+        id         BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+        season_id  BIGINT(20) UNSIGNED NOT NULL,
+        title      VARCHAR(100) NOT NULL,
+        status     ENUM('active', 'completed') NOT NULL DEFAULT 'active',
+        start_date DATE DEFAULT NULL,
+        end_date   DATE DEFAULT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        KEY season_id (season_id)
+    ) $charset_collate;";
+
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-    dbDelta( $sql );
+    dbDelta( $sql1 );
+    dbDelta( $sql2 );
+    dbDelta( $sql3 );
+
+    update_option( 'epl_db_version', '1.1' );
 }
 
 register_activation_hook( __FILE__, 'epl_create_tables' );
 register_activation_hook( __FILE__, 'emperora_create_payment_tables' );
+
+add_action( 'plugins_loaded', function() {
+    if ( get_option('epl_db_version') !== '1.1' ) {
+        epl_create_tables();
+    }
+});
 
 function create_block_emperora_prediction_league_block_init() {
 	register_block_type_from_metadata( __DIR__ . '/build' );
@@ -115,7 +153,21 @@ function match_meta() {
         'default'       => 'upcoming',
         'auth_callback' => fn() => current_user_can('edit_posts'),
   ]);
+
+  register_post_meta('epl_match', 'round_id', [
+    'single' => true,
+    'type' => 'integer',
+    'show_in_rest' => true,
+    'auth_callback' => fn() => current_user_can('edit_posts')
+  ]);
+
+  register_post_meta('epl_match', 'season_id', [
+    'single' => true,
+    'type' => 'integer',
+    'show_in_rest' => true,
+    'auth_callback' => fn() => current_user_can('edit_posts')
+  ]);
 }
 
 add_action('init', 'match_post_type');
-add_action('init', 'match_meta');  
+add_action('init', 'match_meta');

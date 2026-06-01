@@ -56,6 +56,18 @@ function emperora_create_payment_tables() {
         KEY contest_id (contest_id)
     ) $charset_collate;";
 
+    $epl_seasons = $wpdb->prefix . 'epl_seasons';
+    $season_sql = "CREATE TABLE $epl_seasons (
+
+        
+    ) $charset_collate;";
+
+    $epl_rounds = $wpdb->prefix . 'epl_rounds';
+    $rounds_sql = "CREATE TABLE $epl_rounds (
+
+        
+    ) $charset_collate;";
+
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
     dbDelta( $credits_sql );
     dbDelta( $transactions_sql );

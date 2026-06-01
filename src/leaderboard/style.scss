@@ -10,6 +10,37 @@
     margin: 0 auto;
     font-family: sans-serif;
 
+    .epl-filter-form {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 1rem;
+
+        select {
+            flex: 1;
+            min-width: 0;
+            font-size: 13px;
+            padding: 6px 10px;
+            border: 0.5px solid rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            background: #fff;
+            color: #333;
+            cursor: pointer;
+
+            &:focus {
+                outline: none;
+                border-color: var(--epl-red);
+            }
+        }
+
+        .epl-btn {
+            flex-shrink: 0;
+            white-space: nowrap;
+            font-size: 12px;
+            padding: 6px 10px;
+        }
+    }
+
     .epl-leaderboard-title {
         font-size: 18px;
         font-weight: 500;
