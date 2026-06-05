@@ -74,6 +74,7 @@ function epl_create_tables() {
         season_id  BIGINT(20) UNSIGNED NOT NULL,
         title      VARCHAR(100) NOT NULL,
         status     ENUM('active', 'completed') NOT NULL DEFAULT 'active',
+        entry_fee INT NOT NULL DEFAULT 0,
         start_date DATE DEFAULT NULL,
         end_date   DATE DEFAULT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -81,19 +82,31 @@ function epl_create_tables() {
         KEY season_id (season_id)
     ) $charset_collate;";
 
+    $round_entries = $wpdb->prefix . 'epl_round_entries';
+    $sql4 = "CREATE TABLE $round_entries (
+        id         BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+        user_id    BIGINT(20) UNSIGNED NOT NULL,
+        round_id   BIGINT(20) UNSIGNED NOT NULL,
+        amount_paid INT NOT NULL DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        UNIQUE KEY unique_entry (user_id, round_id)
+    ) $charset_collate;";
+
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
     dbDelta( $sql1 );
     dbDelta( $sql2 );
     dbDelta( $sql3 );
+    dbDelta( $sql4 );
 
-    update_option( 'epl_db_version', '1.1' );
+    update_option( 'epl_db_version', '1.2' );
 }
 
 register_activation_hook( __FILE__, 'epl_create_tables' );
 register_activation_hook( __FILE__, 'emperora_create_payment_tables' );
 
 add_action( 'plugins_loaded', function() {
-    if ( get_option('epl_db_version') !== '1.1' ) {
+    if ( get_option('epl_db_version') !== '1.2' ) {
         epl_create_tables();
     }
 });

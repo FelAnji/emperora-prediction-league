@@ -88,6 +88,7 @@ function epl_render_seasons_page() {
                 'start_date' => sanitize_text_field($_POST['round_start']),
                 'end_date'   => sanitize_text_field($_POST['round_end']),
                 'status'     => 'active',
+                'entry_fee' => intval($_POST['round_entry_fee'])
             ]
         );
 
@@ -196,6 +197,10 @@ function epl_render_seasons_page() {
                 <tr>
                     <th>Start Date</th>
                     <td><input type="date" name="round_start" /></td>
+                </tr>
+                <tr>
+                    <th>Entry Fee</th>
+                    <td><input type="number" name="round_entry_fee" required></td>
                 </tr>
                 <tr>
                     <th>End Date</th>

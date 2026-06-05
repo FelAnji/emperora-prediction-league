@@ -25,6 +25,19 @@
             $user_id
         ));
 
+        // Get active round and check if user has paid
+        $active_round = $wpdb->get_row(
+            "SELECT * FROM {$wpdb->prefix}epl_rounds WHERE status = 'active' LIMIT 1"
+        );
+
+        $has_entered = false;
+        if ($active_round) {
+            $has_entered = (bool) $wpdb->get_var($wpdb->prepare(
+                "SELECT id FROM {$wpdb->prefix}epl_round_entries WHERE user_id = %d AND round_id = %d",
+                $user_id, $active_round->id
+            ));
+        }
+
         wp_interactivity_state('emperora', [
             'isOpen' => false,
             'homeTeam' => $home_team,
@@ -51,7 +64,10 @@
                 'scoreHome' => null,
                 'scoreAway' => null,
 
-                'creditAmount' => 12
+                'creditAmount' => 12,
+
+                'entryAmount' => $active_round ? $active_round->entry_fee : 0,
+                'roundID' => $active_round ? $active_round->id : null,
                 ]); ?>
 
                 data-wp-init="callbacks.loadPrediction"
@@ -83,6 +99,30 @@
                     />
                     <button class="epl-btn epl-btn--sm" data-wp-on--click="actions.buyCredits">Buy Credits</button>
             </span>
+
+            <?php if ($active_round) : ?>
+                <div class="epl-entry-banner">
+                    <?php if (!$has_entered) : ?>
+                        <p class="epl-entry-text">
+                            🏆 You're playing for free. Enter this round to compete for the prize pool.
+                        </p>
+                        <div class="epl-entry-controls">
+                            <input 
+                                type="number" 
+                                min="<?php echo $active_round->entry_fee; ?>"
+                                placeholder="Min ₦<?php echo number_format($active_round->entry_fee); ?>"
+                                data-wp-bind--value="context.entryAmount"
+                                data-wp-on--input="actions.setEntryAmount"
+                            />
+                            <button class="epl-btn epl-btn--sm" data-wp-on--click="actions.enterRound">
+                                Enter Round
+                            </button>
+                        </div>
+                    <?php else : ?>
+                        <p class="epl-entry-paid">✓ You're entered in this round</p>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
 
             <?php if ($match_status === 'upcoming') : ?>
 

@@ -24,6 +24,70 @@ function epl_register_payment_routes() {
         'callback' => 'epl_get_balance_endpoint',
         'permission_callback' => fn() => is_user_logged_in()
     ]);
+
+    register_rest_route('emperora/v1', '/enter-round', [
+        'methods'             => 'POST',
+        'callback'            => 'epl_enter_round',
+        'permission_callback' => fn() => is_user_logged_in()
+    ]);
+}
+
+function epl_enter_round($request) {
+    $user_id  = get_current_user_id();
+    $email    = wp_get_current_user()->user_email;
+    $round_id = intval($request['round_id']);
+    $amount   = intval($request['amount']);
+
+    global $wpdb;
+
+    // Get the round's entry fee
+    $round = $wpdb->get_row($wpdb->prepare(
+        "SELECT * FROM {$wpdb->prefix}epl_rounds WHERE id = %d",
+        $round_id
+    ));
+
+    if (!$round) {
+        return new WP_Error('invalid_round', 'Round not found', ['status' => 404]);
+    }
+
+    if ($amount < $round->entry_fee) {
+        return new WP_Error('invalid_amount', 'Amount is below the minimum entry fee', ['status' => 400]);
+    }
+
+    // Check if user already entered
+    $existing = $wpdb->get_var($wpdb->prepare(
+        "SELECT id FROM {$wpdb->prefix}epl_round_entries WHERE user_id = %d AND round_id = %d",
+        $user_id, $round_id
+    ));
+
+    if ($existing) {
+        return new WP_Error('already_entered', 'You have already entered this round', ['status' => 400]);
+    }
+
+    // Initialise Paystack payment
+    $response = wp_remote_post('https://api.paystack.co/transaction/initialize', [
+        'headers' => [
+            'Authorization' => 'Bearer ' . EPL_PAYSTACK_SECRET_KEY,
+            'Content-Type'  => 'application/json',
+        ],
+        'body' => json_encode([
+            'email'        => $email,
+            'amount'       => $amount * 100, // kobo
+            'metadata'     => [
+                'user_id'   => $user_id,
+                'round_id'  => $round_id,
+                'amount'    => $amount,
+                'type'      => 'round_entry'
+            ]
+        ]),
+    ]);
+
+    if (is_wp_error($response)) {
+        return new WP_Error('paystack_error', 'Payment initialisation failed', ['status' => 500]);
+    }
+
+    $body = json_decode(wp_remote_retrieve_body($response), true);
+    return rest_ensure_response($body);
 }
 
 function epl_get_balance_endpoint ($request) {
@@ -107,9 +171,24 @@ function epl_handle_webhook($request) {
         return new WP_Error('user_not_found', 'User not found', ['status' => 404]);
     }
 
-    // 6. Add credits to the user
-    $amount = $event['data']['metadata']['credits'];
-    epl_add_credits($user_id, $amount);
+    $type = $metadata['type'] ?? 'credits';
+
+    if ($type === 'round_entry') {
+        $round_id   = intval($metadata['round_id']);
+        $amount_paid = intval($metadata['amount']);
+
+        $wpdb->insert(
+            $wpdb->prefix . 'epl_round_entries',
+            [
+                'user_id'    => $user_id,
+                'round_id'   => $round_id,
+                'amount_paid' => $amount_paid,
+            ]
+        );
+    } else {
+        $amount = $metadata['credits'];
+        epl_add_credits($user_id, $amount);
+    }
 
     return rest_ensure_response(['success' => true]);
 }

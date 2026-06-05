@@ -26,12 +26,16 @@
         if ($request['season_id']) {
             $season_id = intval($request['season_id']);
             $rounds = $wpdb->get_results($wpdb->prepare(
-                "SELECT * FROM {$wpdb->prefix}epl_rounds WHERE season_id = %d",
+                "SELECT r.* FROM {$wpdb->prefix}epl_rounds r
+                JOIN {$wpdb->prefix}epl_seasons s ON r.season_id = s.id
+                WHERE r.season_id = %d AND s.status = 'active'",
                 $season_id
             ));
         } else {
             $rounds = $wpdb->get_results(
-                "SELECT * FROM {$wpdb->prefix}epl_rounds"
+                "SELECT r.* FROM {$wpdb->prefix}epl_rounds r
+                JOIN {$wpdb->prefix}epl_seasons s ON r.season_id = s.id
+                WHERE s.status = 'active'"
             );
         }
 
