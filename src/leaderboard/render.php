@@ -49,6 +49,28 @@ $results = $wpdb->get_results(
     ORDER BY total_points DESC"
 );
 
+$active_round = $wpdb->get_row(
+    "SELECT * FROM {$wpdb->prefix}epl_rounds
+     WHERE status = 'active'
+     ORDER BY created_at DESC
+     LIMIT 1"
+);
+
+$prize_pool = 0;
+if ($active_round) {
+    $prize_pool = (int) $wpdb->get_var($wpdb->prepare(
+        "SELECT SUM(amount_paid) FROM {$wpdb->prefix}emperora_entries WHERE round_id = %d",
+        $active_round->id
+    ));
+}
+
+$prizes = [
+    'first'    => $prize_pool * 0.40,
+    'second'   => $prize_pool * 0.25,
+    'third'    => $prize_pool * 0.20,
+    'platform' => $prize_pool * 0.15,
+];
+
 ?>
 
 <div <?php echo get_block_wrapper_attributes(); ?>>
@@ -130,6 +152,24 @@ $results = $wpdb->get_results(
                     <tr class="<?php echo $rank_class; ?>">
                         <td><span class="epl-rank-num"><?php echo $rank; ?></span></td>
                         <td><?php echo mb_strimwidth(get_userdata($row->user_id)->display_name, 0, 12, '...'); ?></td>
+                        <?php
+                            $display_name = mb_strimwidth(get_userdata($row->user_id)->display_name, 0, 12, '...');
+                            $is_paid = false;
+                            if ($active_round) {
+                                $is_paid = (bool) $wpdb->get_var($wpdb->prepare(
+                                    "SELECT id FROM {$wpdb->prefix}emperora_entries
+                                    WHERE user_id = %d AND round_id = %d",
+                                    $row->user_id, $active_round->id
+                                ));
+                            }
+                        ?>
+                        <td>
+                            <?php if ($is_paid) : ?>
+                                <a href="#" class="epl-paid-player"><?php echo $display_name; ?></a>
+                            <?php else : ?>
+                                <?php echo $display_name; ?>
+                            <?php endif; ?>
+                        </td>
                         <td><?php echo $row->total_games; ?></td>
                         
                         <td class="epl-pts"><?php echo $row->total_points; ?></td>    
@@ -145,5 +185,16 @@ $results = $wpdb->get_results(
                 <?php endforeach; ?>
             </tbody>
         </table>
+
+        <?php if ($prize_pool > 0) : ?>
+            <div class="epl-prize-pool">
+                <p class="epl-prize-pool-total">🏆 Prize Pool: ₦<?php echo number_format($prize_pool); ?></p>
+                <div class="epl-prize-breakdown">
+                    <span>1st: ₦<?php echo number_format($prizes['first']); ?></span>
+                    <span>2nd: ₦<?php echo number_format($prizes['second']); ?></span>
+                    <span>3rd: ₦<?php echo number_format($prizes['third']); ?></span>
+                </div>
+            </div>
+        <?php endif; ?>
     <?php endif; ?>
 </div>

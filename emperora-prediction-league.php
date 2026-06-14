@@ -20,7 +20,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once plugin_dir_path(__FILE__) . 'inc/class-rest-api.php';
 require_once plugin_dir_path(__FILE__) . 'inc/class-point.php';
 require_once plugin_dir_path(__FILE__) . 'inc/install.php';
-require_once plugin_dir_path(__FILE__) . 'inc/class-credit.php';
 require_once plugin_dir_path(__FILE__) . 'inc/class-payment.php';
 require_once plugin_dir_path(__FILE__) . 'inc/class-admin.php';
 require_once plugin_dir_path(__FILE__) . 'inc/class-login.php';

@@ -6,7 +6,6 @@
     </div>
 <?php else : ?>
     <?php
-
         if (get_post_type() !== 'epl_match') return;
 
         $meta = get_post_meta(get_the_ID());
@@ -25,15 +24,18 @@
             $user_id
         ));
 
-        // Get active round and check if user has paid
         $active_round = $wpdb->get_row(
-            "SELECT * FROM {$wpdb->prefix}epl_rounds WHERE status = 'active' LIMIT 1"
+            "SELECT * FROM {$wpdb->prefix}epl_rounds
+            WHERE status = 'active'
+            ORDER BY created_at DESC
+            LIMIT 1"
         );
 
         $has_entered = false;
         if ($active_round) {
             $has_entered = (bool) $wpdb->get_var($wpdb->prepare(
-                "SELECT id FROM {$wpdb->prefix}epl_round_entries WHERE user_id = %d AND round_id = %d",
+                "SELECT id FROM {$wpdb->prefix}emperora_entries
+                WHERE user_id = %d AND round_id = %d",
                 $user_id, $active_round->id
             ));
         }
@@ -45,7 +47,6 @@
 
             'isPredictScore' => false,
 
-            'balance' => epl_get_balance(get_current_user_id()),
             'paystackPublicKey' => EPL_PAYSTACK_PUBLIC_KEY
         ]);
         ?>
@@ -68,10 +69,17 @@
 
                 'entryAmount' => $active_round ? $active_round->entry_fee : 0,
                 'roundID' => $active_round ? $active_round->id : null,
+                'hasEntered' => $has_entered,
+
+                'showToast' => false,
+                'toastMessage' => '',
                 ]); ?>
 
                 data-wp-init="callbacks.loadPrediction"
         >
+            <div class="epl-toast" data-wp-bind--hidden="!context.showToast">
+                <p data-wp-text="context.toastMessage"></p>
+            </div>
 
             <div class="epl-status-wrap">
                 <span class="epl-status-pill">EmperorA Prediction League</span>
@@ -85,27 +93,13 @@
                 </h1>
             </span>
 
-            <span class="epl-balance-row">
-                <div>
-                    <p class="epl-balance-label">Your balance:</p>
-                    <p class="epl-balance-value" data-wp-text="state.balance"></p>
-                </div>        
-                    <input 
-                        type="number" 
-                        min="12" 
-                        placeholder="Min 12 credits"
-                        data-wp-bind--value="context.creditAmount"
-                        data-wp-on--input="actions.setCreditAmount"
-                    />
-                    <button class="epl-btn epl-btn--sm" data-wp-on--click="actions.buyCredits">Buy Credits</button>
-            </span>
-
             <?php if ($active_round) : ?>
-                <div class="epl-entry-banner">
-                    <?php if (!$has_entered) : ?>
+                <div class="epl-entry-banner" data-wp-bind--hidden="!context.roundID">
+                    <div data-wp-bind--hidden="context.hasEntered">
                         <p class="epl-entry-text">
                             🏆 You're playing for free. Enter this round to compete for the prize pool.
                         </p>
+                        <a href="#" class="epl-entry-link">Learn more about the prediction league →</a>
                         <div class="epl-entry-controls">
                             <input 
                                 type="number" 
@@ -118,11 +112,13 @@
                                 Enter Round
                             </button>
                         </div>
-                    <?php else : ?>
+                    </div>
+                    <div data-wp-bind--hidden="!context.hasEntered">
                         <p class="epl-entry-paid">✓ You're entered in this round</p>
-                    <?php endif; ?>
+                    </div>
                 </div>
             <?php endif; ?>
+
 
             <?php if ($match_status === 'upcoming') : ?>
 

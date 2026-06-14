@@ -56,44 +56,51 @@ const { state, actions } = store('emperora', {
                 const data = await response.json();
 
                 if (data.success) {
-                    state.balance--;
+                    context.showToast = true;
+                    context.toastMessage = '✅ Prediction saved successfully! Click on Save Outcome';
+                    setTimeout(() => {
+                        context.showToast = false;
+                    }, 3000);
                 }
             } catch (error) {
                 console.error('Prediction failed:', error);
             }
         },
-        async buyCredits() {
+        async enterRound() {
             const context = getContext();
-
-            if (!context.creditAmount || context.creditAmount < 12) {
-                alert('Minimum purchase is 12 credits');
-                return;
-            }
+            console.log('roundID:', context.roundID, 'entryAmount:', context.entryAmount, 'nonce:', context.nonce);
 
             try {
-                const response = await fetch('/wp-json/emperora/v1/buy', {
+                const response = await fetch('/wp-json/emperora/v1/enter-round', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-WP-Nonce': context.nonce,
                     },
-                    body: JSON.stringify({ 
-                        amount: context.creditAmount,
-                        match_id: context.matchID
-                    })
-                    
+                    body: JSON.stringify({
+                        round_id: context.roundID,
+                        amount: context.entryAmount,
+                    }),
                 });
+
                 const data = await response.json();
-                window.location.href = data.data.authorization_url;
+
+                if (data.success) {
+                    context.hasEntered = true;
+                    context.showToast = true;
+                    context.toastMessage = '✅ You have successfully entered this round!';
+                    setTimeout(() => {
+                        context.showToast = false;
+                    }, 3000);
+                }
             } catch (error) {
-                console.error('Payment failed:', error);
+                console.error('Entry failed:', error);
             }
         },
-        setCreditAmount(event) {
+        setEntryAmount(event) {
             const context = getContext();
-            context.creditAmount = parseInt(event.target.value);
-        }
-
+            context.entryAmount = parseInt(event.target.value);
+        },
 
     },
 

@@ -10,6 +10,25 @@
     margin: 0 auto;
     font-family: sans-serif;
 
+    .epl-toast {
+        position: fixed;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #333;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        z-index: 9999;
+        white-space: nowrap;
+
+        p {
+            margin: 0;
+        }
+    }
+
 	.epl-status-wrap {
         text-align: center;
         margin-bottom: 0.5rem;
@@ -37,39 +56,38 @@
         }
     }
 
-	.epl-balance-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: rgba(0, 0, 0, 0.04);
+    .epl-entry-banner {
+        background: rgba(255, 40, 0, 0.04);
+        border: 0.5px solid rgba(255, 40, 0, 0.2);
         border-radius: 8px;
         padding: 0.75rem 1rem;
         margin-bottom: 1rem;
-        gap: 12px;
 
-        .epl-balance-label {
+        .epl-entry-text {
             font-size: 13px;
-            color: #666;
-            margin-bottom: 2px;
+            color: #333;
+            margin-bottom: 0.75rem;
         }
 
-        .epl-balance-value {
-            font-size: 20px;
-            font-weight: 500;
-        }
-
-        .epl-credit-controls {
+        .epl-entry-controls {
             display: flex;
             align-items: center;
             gap: 8px;
 
             input[type="number"] {
-                width: 80px;
+                flex: 1;
                 font-size: 13px;
-                padding: 4px 8px;
+                padding: 5px 8px;
                 border: 0.5px solid rgba(0, 0, 0, 0.3);
                 border-radius: 8px;
             }
+        }
+
+        .epl-entry-paid {
+            font-size: 13px;
+            font-weight: 500;
+            color: #16a34a;
+            margin: 0;
         }
     }
 
