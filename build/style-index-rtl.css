@@ -1,0 +1,233 @@
+/*!***************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/style.scss ***!
+  \***************************************************************************************************************************************************************************************************************************************/
+.wp-block-create-block-emperora-prediction-league {
+  --epl-red: #FF2800;
+  --epl-red-dark: #cc2000;
+  background: #fff;
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 480px;
+  margin: 0 auto;
+  font-family: sans-serif;
+}
+.wp-block-create-block-emperora-prediction-league .epl-toast {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 50%;
+  transform: translateX(50%);
+  background: #333;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  z-index: 9999;
+  white-space: nowrap;
+}
+.wp-block-create-block-emperora-prediction-league .epl-toast p {
+  margin: 0;
+}
+.wp-block-create-block-emperora-prediction-league .epl-status-wrap {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+.wp-block-create-block-emperora-prediction-league .epl-status-pill {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 2px 10px;
+  border-radius: 99px;
+  background: rgba(255, 40, 0, 0.1);
+  color: var(--epl-red);
+  margin-bottom: 0.75rem;
+}
+.wp-block-create-block-emperora-prediction-league .epl-match-title {
+  font-size: 24px;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+.wp-block-create-block-emperora-prediction-league .epl-match-title .epl-vs {
+  color: var(--epl-red);
+}
+.wp-block-create-block-emperora-prediction-league .epl-entry-banner {
+  background: rgba(255, 40, 0, 0.04);
+  border: 0.5px solid rgba(255, 40, 0, 0.2);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+.wp-block-create-block-emperora-prediction-league .epl-entry-banner .epl-entry-text {
+  font-size: 13px;
+  color: #333;
+  margin-bottom: 0.75rem;
+}
+.wp-block-create-block-emperora-prediction-league .epl-entry-banner .epl-entry-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.wp-block-create-block-emperora-prediction-league .epl-entry-banner .epl-entry-controls input[type=number] {
+  flex: 1;
+  font-size: 13px;
+  padding: 5px 8px;
+  border: 0.5px solid rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+}
+.wp-block-create-block-emperora-prediction-league .epl-entry-banner .epl-entry-paid {
+  font-size: 13px;
+  font-weight: 500;
+  color: #16a34a;
+  margin: 0;
+}
+.wp-block-create-block-emperora-prediction-league .epl-btn {
+  display: inline-block;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  transition: background-color 0.15s;
+  background: var(--epl-red);
+  color: #fff;
+}
+.wp-block-create-block-emperora-prediction-league .epl-btn:hover {
+  background: var(--epl-red-dark);
+}
+.wp-block-create-block-emperora-prediction-league .epl-btn--sm {
+  font-size: 12px;
+  padding: 5px 12px;
+}
+.wp-block-create-block-emperora-prediction-league .epl-btn--full {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+.wp-block-create-block-emperora-prediction-league .epl-prediction-box {
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+.wp-block-create-block-emperora-prediction-league .epl-prediction-box label {
+  font-size: 13px;
+  color: #666;
+  display: block;
+  margin-bottom: 6px;
+}
+.wp-block-create-block-emperora-prediction-league .epl-prediction-box select {
+  width: 100%;
+  font-size: 14px;
+  padding: 8px 10px;
+  border: 0.5px solid rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+}
+.wp-block-create-block-emperora-prediction-league .epl-score-section {
+  border-top: 0.5px solid rgba(0, 0, 0, 0.15);
+  padding-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.wp-block-create-block-emperora-prediction-league .epl-score-section .epl-score-label {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+.wp-block-create-block-emperora-prediction-league .epl-score-section .epl-score-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 0.75rem;
+}
+.wp-block-create-block-emperora-prediction-league .epl-score-section .epl-score-row .epl-score-team {
+  font-size: 13px;
+  color: #666;
+  text-align: center;
+  flex: 1;
+}
+.wp-block-create-block-emperora-prediction-league .epl-score-section .epl-score-row .epl-score-team input[type=number] {
+  display: block;
+  width: 56px;
+  margin: 4px auto 0;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  border: 0.5px solid rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 6px;
+}
+.wp-block-create-block-emperora-prediction-league .epl-score-section .epl-score-row .epl-score-sep {
+  font-size: 22px;
+  font-weight: 500;
+  color: #666;
+  padding-top: 20px;
+}
+@media (max-width: 480px) {
+  .wp-block-create-block-emperora-prediction-league {
+    padding: 1rem;
+  }
+  .wp-block-create-block-emperora-prediction-league .epl-balance-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .wp-block-create-block-emperora-prediction-league .epl-balance-row .epl-credit-controls {
+    width: 100%;
+  }
+  .wp-block-create-block-emperora-prediction-league .epl-balance-row .epl-credit-controls input[type=number] {
+    flex: 1;
+    width: auto;
+  }
+  .wp-block-create-block-emperora-prediction-league .epl-balance-row .epl-credit-controls .epl-btn {
+    flex-shrink: 0;
+  }
+  .wp-block-create-block-emperora-prediction-league .epl-score-row {
+    gap: 8px;
+  }
+  .wp-block-create-block-emperora-prediction-league .epl-score-row .epl-score-team input[type=number] {
+    width: 48px;
+  }
+}
+.wp-block-create-block-emperora-prediction-league .epl-login-prompt {
+  text-align: center;
+  padding: 2rem 1rem;
+  font-size: 14px;
+  color: #666;
+}
+.wp-block-create-block-emperora-prediction-league .epl-login-prompt a {
+  color: #FF2800;
+  font-weight: 500;
+  text-decoration: none;
+}
+.wp-block-create-block-emperora-prediction-league .epl-login-prompt a:hover {
+  color: #cc2000;
+}
+.wp-block-create-block-emperora-prediction-league .epl-prediction-result {
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+.wp-block-create-block-emperora-prediction-league .epl-prediction-result .epl-prediction-closed-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 10px;
+  border-radius: 99px;
+  background: rgba(0, 0, 0, 0.06);
+  color: #666;
+  margin-bottom: 0.75rem;
+}
+.wp-block-create-block-emperora-prediction-league .epl-prediction-result .epl-prediction-label {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+}
+.wp-block-create-block-emperora-prediction-league .epl-prediction-result .epl-prediction-value {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--epl-red);
+}

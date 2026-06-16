@@ -1,0 +1,251 @@
+/*!***************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/leaderboard/style.scss ***!
+  \***************************************************************************************************************************************************************************************************************************************************/
+.wp-block-create-block-leaderboard {
+  --epl-red: #FF2800;
+  overflow-x: auto;
+  background: #fff;
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 480px;
+  margin: 0 auto;
+  font-family: sans-serif;
+}
+.wp-block-create-block-leaderboard .epl-prize-pool {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 0.5px solid rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+.wp-block-create-block-leaderboard .epl-prize-pool .epl-prize-pool-total {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--epl-red);
+  margin-bottom: 0.5rem;
+}
+.wp-block-create-block-leaderboard .epl-prize-pool .epl-prize-breakdown {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  font-size: 13px;
+  color: #666;
+}
+.wp-block-create-block-leaderboard .epl-filter-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+.wp-block-create-block-leaderboard .epl-filter-form select {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  padding: 6px 10px;
+  border: 0.5px solid rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+}
+.wp-block-create-block-leaderboard .epl-filter-form select:focus {
+  outline: none;
+  border-color: var(--epl-red);
+}
+.wp-block-create-block-leaderboard .epl-filter-form .epl-btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-size: 12px;
+  padding: 6px 10px;
+}
+.wp-block-create-block-leaderboard .epl-leaderboard-title {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+.wp-block-create-block-leaderboard table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 400px;
+}
+.wp-block-create-block-leaderboard table thead tr {
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.15);
+}
+.wp-block-create-block-leaderboard table thead tr th {
+  text-align: right;
+  padding: 6px 8px;
+  color: #666;
+  font-weight: 500;
+}
+.wp-block-create-block-leaderboard table thead tr th:not(:first-child) {
+  text-align: center;
+}
+.wp-block-create-block-leaderboard table tbody tr {
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.15);
+}
+.wp-block-create-block-leaderboard table tbody tr td {
+  padding: 10px 8px;
+  color: #333;
+}
+.wp-block-create-block-leaderboard table tbody tr td:not(:first-child) {
+  text-align: center;
+}
+.wp-block-create-block-leaderboard table tbody tr td.epl-pts {
+  font-weight: 700;
+}
+.wp-block-create-block-leaderboard table tbody tr.epl-rank-1 {
+  background: rgba(255, 40, 0, 0.04);
+}
+.wp-block-create-block-leaderboard table tbody tr.epl-rank-2 {
+  background: rgba(180, 180, 180, 0.05);
+}
+.wp-block-create-block-leaderboard table tbody tr.epl-rank-3 {
+  background: rgba(180, 83, 9, 0.04);
+}
+.wp-block-create-block-leaderboard .epl-leaderboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.wp-block-create-block-leaderboard .epl-rules-btn {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1.5px solid rgba(0, 0, 0, 0.3);
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.wp-block-create-block-leaderboard .epl-rules-btn:hover {
+  border-color: var(--epl-red);
+  color: var(--epl-red);
+}
+.wp-block-create-block-leaderboard .epl-rules-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+}
+.wp-block-create-block-leaderboard .epl-rules-overlay.is-open {
+  display: flex;
+}
+.wp-block-create-block-leaderboard .epl-rules-overlay .epl-rules-modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 360px;
+  width: 90%;
+}
+.wp-block-create-block-leaderboard .epl-rules-overlay .epl-rules-modal .epl-rules-title {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+.wp-block-create-block-leaderboard .epl-rules-overlay .epl-rules-modal .epl-rules-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.25rem;
+}
+.wp-block-create-block-leaderboard .epl-rules-overlay .epl-rules-modal .epl-rules-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.15);
+  font-size: 14px;
+  color: #333;
+}
+.wp-block-create-block-leaderboard .epl-rules-overlay .epl-rules-modal .epl-rules-pts {
+  font-weight: 700;
+  color: var(--epl-red);
+  min-width: 36px;
+}
+.wp-block-create-block-leaderboard .epl-rules-overlay .epl-rules-modal .epl-rules-close {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  background: var(--epl-red);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.wp-block-create-block-leaderboard .epl-rules-overlay .epl-rules-modal .epl-rules-close:hover {
+  background: var(--epl-red-dark);
+}
+.wp-block-create-block-leaderboard .epl-empty {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #666;
+  font-size: 14px;
+  border: 0.5px solid rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+}
+.wp-block-create-block-leaderboard .epl-paid-player {
+  color: var(--epl-red);
+  font-weight: 500;
+  text-decoration: none;
+}
+.wp-block-create-block-leaderboard .epl-paid-player:hover {
+  text-decoration: underline;
+}
+.wp-block-create-block-leaderboard .epl-rank-1 .epl-rank-num {
+  color: var(--epl-red);
+  font-weight: 500;
+}
+.wp-block-create-block-leaderboard .epl-rank-2 .epl-rank-num {
+  color: #666;
+  font-weight: 500;
+}
+.wp-block-create-block-leaderboard .epl-rank-3 .epl-rank-num {
+  color: #b45309;
+  font-weight: 500;
+}
+@media (max-width: 480px) {
+  .wp-block-create-block-leaderboard {
+    padding: 1rem;
+  }
+  .wp-block-create-block-leaderboard .epl-leaderboard-title {
+    font-size: 16px;
+  }
+  .wp-block-create-block-leaderboard table {
+    font-size: 13px;
+  }
+}
+.wp-block-create-block-leaderboard .epl-last-5 {
+  display: flex;
+  gap: 3px;
+  flex-wrap: nowrap;
+  justify-content: center;
+}
+.wp-block-create-block-leaderboard .epl-indicator--green,
+.wp-block-create-block-leaderboard .epl-indicator--red,
+.wp-block-create-block-leaderboard .epl-indicator--grey {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  font-size: 9px;
+  font-weight: 700;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.wp-block-create-block-leaderboard .epl-indicator--green {
+  background-color: #16a34a;
+}
+.wp-block-create-block-leaderboard .epl-indicator--red {
+  background-color: #dc2626;
+}
+.wp-block-create-block-leaderboard .epl-indicator--grey {
+  background-color: #6b7280;
+}
