@@ -106,7 +106,6 @@
                     'season_id' => $season_id
                 ]
             );
-            epl_deduct_credit($user_id);
         }
 
         return rest_ensure_response(['success' => true]);
