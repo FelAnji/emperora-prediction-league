@@ -10,6 +10,25 @@
     margin: 0 auto;
     font-family: sans-serif;
 
+    .epl-btn {
+        display: inline-block;
+        border-radius: 99px;
+        border: 1.5px solid rgba(0, 0, 0, 0.3);
+        background: transparent;
+        color: #666;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 500;
+        padding: 4px 12px;
+        transition: border-color 0.15s, color 0.15s;
+
+        &:hover {
+            border-color: var(--epl-red);
+            color: var(--epl-red);
+        }
+    }
+
+
     .epl-prize-pool {
         margin-top: 1rem;
         padding-top: 1rem;

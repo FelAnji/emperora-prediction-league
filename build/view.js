@@ -129,7 +129,14 @@ const {
     },
     async enterRound() {
       const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
-      console.log('roundID:', context.roundID, 'entryAmount:', context.entryAmount, 'nonce:', context.nonce);
+      if (!context.entryAmount || context.entryAmount < context.minEntryFee) {
+        context.showToast = true;
+        context.toastMessage = `❌ Minimum entry is ₦${context.minEntryFee}`;
+        setTimeout(() => {
+          context.showToast = false;
+        }, 3000);
+        return;
+      }
       try {
         const response = await fetch('/wp-json/emperora/v1/enter-round', {
           method: 'POST',
@@ -139,20 +146,29 @@ const {
           },
           body: JSON.stringify({
             round_id: context.roundID,
-            amount: context.entryAmount
+            amount: context.entryAmount,
+            callback_url: window.location.href
           })
         });
         const data = await response.json();
-        if (data.success) {
-          context.hasEntered = true;
+        console.error('Full response:', data);
+        const url = data?.data?.authorization_url;
+        if (url) {
+          window.location.href = url;
+        } else {
           context.showToast = true;
-          context.toastMessage = '✅ You have successfully entered this round!';
+          context.toastMessage = '❌ Could not initialize payment. Try again.';
           setTimeout(() => {
             context.showToast = false;
           }, 3000);
         }
       } catch (error) {
         console.error('Entry failed:', error);
+        context.showToast = true;
+        context.toastMessage = '❌ Something went wrong.';
+        setTimeout(() => {
+          context.showToast = false;
+        }, 3000);
       }
     },
     setEntryAmount(event) {

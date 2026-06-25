@@ -25,6 +25,12 @@ function epl_register_payment_routes() {
         'callback' => fn() => rest_ensure_response(['ok' => true]),
         'permission_callback' => fn() => is_user_logged_in()
     ]);
+
+    register_rest_route('emperora/v1', '/verify-entry', [
+        'methods'             => 'GET',
+        'callback'            => 'epl_verify_entry',
+        'permission_callback' => '__return_true'
+    ]);
 }
 
 function epl_enter_round($request) {
@@ -32,6 +38,9 @@ function epl_enter_round($request) {
     $email    = wp_get_current_user()->user_email;
     $round_id = intval($request['round_id']);
     $amount   = intval($request['amount']);
+    $callback_url = !empty($request['callback_url']) 
+        ? esc_url_raw($request['callback_url']) 
+        : get_permalink();
 
     global $wpdb;
 
@@ -65,6 +74,7 @@ function epl_enter_round($request) {
         'body' => json_encode([
             'email'    => $email,
             'amount'   => $amount * 100,
+            'callback_url' => $callback_url,
             'metadata' => [
                 'user_id'  => $user_id,
                 'round_id' => $round_id,
@@ -123,4 +133,60 @@ function epl_handle_webhook($request) {
     }
 
     return rest_ensure_response(['success' => true]);
+}
+
+function epl_verify_entry($request) {
+    $reference = sanitize_text_field($request['reference']);
+
+    if (!$reference) {
+        return new WP_Error('missing_reference', 'No reference provided', ['status' => 400]);
+    }
+
+    $response = wp_remote_get('https://api.paystack.co/transaction/verify/' . $reference, [
+        'headers' => [
+            'Authorization' => 'Bearer ' . EPL_PAYSTACK_SECRET_KEY,
+        ],
+    ]);
+
+    if (is_wp_error($response)) {
+        return new WP_Error('verify_failed', 'Verification request failed', ['status' => 500]);
+    }
+
+    $body  = json_decode(wp_remote_retrieve_body($response), true);
+    $data  = $body['data'] ?? null;
+
+    if (!$data || $data['status'] !== 'success') {
+        return new WP_Error('payment_not_successful', 'Payment not verified', ['status' => 400]);
+    }
+
+    $metadata    = $data['metadata'];
+    $user_id     = intval($metadata['user_id']);
+    $round_id    = intval($metadata['round_id']);
+    $amount_paid = intval($metadata['amount']);
+    $type        = $metadata['type'] ?? '';
+
+    if ($type !== 'round_entry' || !$user_id || !$round_id) {
+        return new WP_Error('invalid_metadata', 'Invalid payment metadata', ['status' => 400]);
+    }
+
+    global $wpdb;
+
+    // Avoid duplicate entry if webhook already fired
+    $existing = $wpdb->get_var($wpdb->prepare(
+        "SELECT id FROM {$wpdb->prefix}emperora_entries WHERE user_id = %d AND round_id = %d",
+        $user_id, $round_id
+    ));
+
+    if (!$existing) {
+        $wpdb->insert(
+            $wpdb->prefix . 'emperora_entries',
+            [
+                'user_id'     => $user_id,
+                'round_id'    => $round_id,
+                'amount_paid' => $amount_paid,
+            ]
+        );
+    }
+
+    return rest_ensure_response(['success' => true, 'already_existed' => (bool) $existing]);
 }

@@ -40,6 +40,49 @@
             ));
         }
 
+        // If returning from Paystack, verify the transaction and record entry immediately
+        if (!$has_entered && isset($_GET['reference']) && $active_round) {
+            $reference = sanitize_text_field($_GET['reference']);
+            
+            $verify = wp_remote_get("https://api.paystack.co/transaction/verify/{$reference}", [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . EPL_PAYSTACK_SECRET_KEY,
+                ],
+            ]);
+
+            if (!is_wp_error($verify)) {
+                $verify_body = json_decode(wp_remote_retrieve_body($verify), true);
+                
+                if (
+                    $verify_body['status'] === true &&
+                    $verify_body['data']['status'] === 'success' &&
+                    isset($verify_body['data']['metadata']['type']) &&
+                    $verify_body['data']['metadata']['type'] === 'round_entry'
+                ) {
+                    $meta = $verify_body['data']['metadata'];
+                    
+                    // Insert entry if not already there
+                    $already = $wpdb->get_var($wpdb->prepare(
+                        "SELECT id FROM {$wpdb->prefix}emperora_entries WHERE user_id = %d AND round_id = %d",
+                        $user_id, intval($meta['round_id'])
+                    ));
+
+                    if (!$already) {
+                        $wpdb->insert(
+                            $wpdb->prefix . 'emperora_entries',
+                            [
+                                'user_id'     => $user_id,
+                                'round_id'    => intval($meta['round_id']),
+                                'amount_paid' => intval($meta['amount']),
+                            ]
+                        );
+                    }
+
+                    $has_entered = true;
+                }
+            }
+        }
+
         wp_interactivity_state('emperora', [
             'isOpen' => false,
             'homeTeam' => $home_team,

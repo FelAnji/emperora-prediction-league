@@ -6,3 +6,4 @@ Thumbs.db
 npm-debug.log*
 wp-admin/
 wp-includes/
+build/
